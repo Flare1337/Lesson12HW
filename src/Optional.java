@@ -2,6 +2,10 @@ package src;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class Optional <T> {
     private T data;
@@ -73,5 +77,81 @@ public class Optional <T> {
             return data.hashCode();
         }
         return 0;
+    }
+
+    public void ifPresent(Consumer<? super T> consumer) {
+        if (isPresent() && consumer != null) {
+            consumer.accept(data);
+        }
+        if (isPresent() && consumer == null) {
+            throw new NullPointerException();
+        }
+    }
+
+    public T orElseGet(Supplier<? extends  T> other) {
+        if (isPresent()) {
+            return data;
+        }
+        else if (other != null) {
+            return other.get();
+        }
+        else {
+            throw new NullPointerException();
+        }
+    }
+
+    public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+        if (isPresent()) {
+            return data;
+        }
+        else if (exceptionSupplier != null) {
+            throw exceptionSupplier.get();
+        }
+        else {
+            throw new NullPointerException();
+        }
+    }
+
+    public Optional<T> filter(Predicate<? super T> predicate) {
+        if (predicate == null) {
+            throw new NullPointerException();
+        }
+        if (isPresent() && predicate.test(data)) {
+            return new Optional<>(data);
+        }
+        else {
+            return new Optional<>();
+        }
+    }
+
+    public <U> Optional<U> map(Function<? super T,? extends U> mapper) {
+        if (mapper == null) {
+            throw new NullPointerException();
+        }
+        if (isPresent()) {
+            U result = mapper.apply(data);
+            if (result != null) {
+                return new <U> Optional<U>(result);
+            }
+        }
+            return new Optional<>();
+    }
+
+    public <U> Optional<U> flatMap(Function<? super T,Optional<U>> mapper) {
+        if (mapper == null) {
+            throw new NullPointerException();
+        }
+        if (isPresent()) {
+            Optional<U> result = mapper.apply(data);
+            if (result == null) {
+                throw new NullPointerException();
+            }
+            else {
+                return new <U> Optional<U>(result.data);
+            }
+        }
+        else {
+            return new Optional<>();
+        }
     }
 }
