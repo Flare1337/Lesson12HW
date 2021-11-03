@@ -134,7 +134,7 @@ public class Optional <T> {
                 return new <U> Optional<U>(result);
             }
         }
-            return new Optional<>();
+        return new Optional<>();
     }
 
     public <U> Optional<U> flatMap(Function<? super T,Optional<U>> mapper) {
