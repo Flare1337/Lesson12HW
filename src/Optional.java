@@ -69,7 +69,8 @@ public class Optional <T> {
 
         Optional <T> other = (Optional <T>) obj;
 
-        return Objects.equals(other, this);
+        return Objects.equals(other, this)
+                && Objects.equals(obj, this);
     }
 
     public int hashCode() {
@@ -147,7 +148,7 @@ public class Optional <T> {
                 throw new NullPointerException();
             }
             else {
-                return new <U> Optional<U>(result.data);
+                return result;
             }
         }
         else {
